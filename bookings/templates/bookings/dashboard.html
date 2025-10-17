@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}My bookings | Arcadia Courts{% endblock %}
+
+{% block content %}
+<section class="courts-section">
+  <header class="section-header">
+    <h1 class="section-title">My bookings</h1>
+    <p class="muted">Manage holds, confirm payments, and review your upcoming sessions.</p>
+  </header>
+  <div data-bookings-list class="booking-list"></div>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+<article class="court-card glass" data-court-id="{{ court.id }}">
+  <img src="{{ court.image }}" alt="{{ court.name }}" class="court-image" />
+  <div class="court-card-body">
+    <h3>{{ court.name }}</h3>
+    <p class="court-location">{{ court.location }}</p>
+    <p class="court-price">Rp {{ court.price_per_hour|floatformat:0 }} / hour</p>
+    <div class="court-card-actions">
+      <a class="btn-ghost" href="{% url 'courts:detail' court.id %}">View details</a>
+      <button class="btn-primary check-availability" type="button">Check Availability</button>
+    </div>
+  </div>
+</article>

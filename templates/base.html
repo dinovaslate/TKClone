@@ -1,19 +1,47 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet" />
-    {% block meta %} {% endblock meta %}
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Arcadia Futsal{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'core/css/main.css' %}" />
+  {% block extra_css %}{% endblock %}
 </head>
-
 <body>
-    {% block content %} {% endblock content %}
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a class="nav-logo" href="{% url 'core:home' %}">
+        <img src="{% static 'images/ball.svg' %}" alt="Arcadia" width="32" height="32" />
+        <span>Arcadia Courts</span>
+      </a>
+      <div class="nav-actions">
+        {% if user.is_authenticated %}
+          <a class="btn-ghost" href="{% url 'bookings:dashboard' %}">My Bookings</a>
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">Logout</button>
+          </form>
+        {% else %}
+          <a class="btn-ghost" href="{% url 'accounts:login' %}">Login</a>
+          <a class="btn-primary" href="{% url 'accounts:register' %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+  <main id="content">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p>&copy; {% now 'Y' %} Arcadia Courts. Crafted for a seamless futsal booking experience.</p>
+  </footer>
+  {% block modals %}{% endblock %}
+  <script type="module" src="{% static 'core/js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
 </body>
-
 </html>

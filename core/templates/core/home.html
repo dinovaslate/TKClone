@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Arcadia Courts | Book your match{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <h1 class="hero-title">Find and book premium futsal courts in minutes.</h1>
+    <p class="muted">Real-time availability, transparent pricing, and lightning fast confirmation.</p>
+  </div>
+  <div class="search-panel glass">
+    <form data-search-form>
+      <div class="search-grid">
+        <div class="search-field">
+          <label for="search-query">Search</label>
+          <input id="search-query" data-search-input data-quick-search data-target="#search-query" type="text" name="query" placeholder="Court name or location" autocomplete="off" />
+        </div>
+        <div class="search-field">
+          <label for="search-date">Date</label>
+          <input id="search-date" data-search-input type="date" name="date" value="{{ search_defaults.date }}" min="{{ search_defaults.date }}" />
+        </div>
+        <div class="search-field">
+          <label for="search-surface">Surface</label>
+          <select id="search-surface" data-search-input name="surface">
+            <option value="">Any surface</option>
+            <option value="synthetic">Synthetic</option>
+            <option value="natural">Natural</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label for="search-min-price">Min Price (IDR)</label>
+          <input id="search-min-price" data-search-input type="number" name="min_price" min="0" step="50000" placeholder="0" />
+        </div>
+        <div class="search-field">
+          <label for="search-max-price">Max Price (IDR)</label>
+          <input id="search-max-price" data-search-input type="number" name="max_price" min="0" step="50000" placeholder="350000" />
+        </div>
+        <div class="search-field">
+          <label for="search-time">Time</label>
+          <input id="search-time" data-search-input type="time" name="time" />
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="btn-primary">Search courts</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="courts-section">
+  <header class="section-header">
+    <h2 class="section-title">Featured courts</h2>
+    <p class="muted">Hand-picked venues with top-tier facilities and flexible booking windows.</p>
+  </header>
+  <div class="courts-grid" data-courts-grid>
+    {% for court in featured_courts %}
+      {% include 'courts/partials/court_card.html' with court=court %}
+    {% empty %}
+      <p class="muted">No courts available yet. Seed the demo data to get started.</p>
+    {% endfor %}
+  </div>
+  <div>
+    <a class="btn-ghost" href="{% url 'courts:list' %}">Browse all courts</a>
+  </div>
+</section>
+{% endblock %}

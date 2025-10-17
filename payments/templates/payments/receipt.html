@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking receipt | Arcadia Courts{% endblock %}
+
+{% block content %}
+<section class="courts-section">
+  <article class="glass" style="padding: 24px; display: grid; gap: 16px; max-width: 600px; margin: 0 auto;">
+    <h1 class="section-title">Payment receipt</h1>
+    <p class="muted">Thank you! Your session is confirmed.</p>
+    <dl style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+      <dt>Court</dt><dd>{{ booking.court.name }}</dd>
+      <dt>Date</dt><dd>{{ booking.date|date:'d M Y' }}</dd>
+      <dt>Time</dt><dd>{{ booking.start_time|date:'H:i' }} – {{ booking.end_time|date:'H:i' }}</dd>
+      <dt>Total</dt><dd>Rp {{ booking.total_price|floatformat:0 }}</dd>
+      <dt>Status</dt><dd>{{ booking.status }}</dd>
+      <dt>Payment</dt><dd>{{ booking.payment_status }}</dd>
+    </dl>
+    <a class="btn-primary" href="{% url 'bookings:dashboard' %}">Back to my bookings</a>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ court.name }} | Arcadia Courts{% endblock %}
+
+{% block content %}
+<section class="courts-section">
+  <article class="glass" style="padding: 24px; display: grid; gap: 24px;">
+    <img src="{{ court.image }}" alt="{{ court.name }}" class="hero-image" />
+    <div>
+      <header style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div>
+          <h1 class="section-title">{{ court.name }}</h1>
+          <p class="muted">{{ court.location }} &bull; {{ court.get_surface_type_display }} &bull; {{ court.length_m }}m × {{ court.width_m }}m</p>
+        </div>
+        {% if user.is_authenticated %}
+          <button class="btn-ghost {% if is_favorite %}active{% endif %}" data-favorite-toggle data-court-id="{{ court.id }}">
+            {% if is_favorite %}★ Favorite{% else %}☆ Favorite{% endif %}
+          </button>
+        {% endif %}
+      </header>
+      <p>{{ court.description }}</p>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot legend-available"></span> Available</div>
+        <div class="legend-item"><span class="legend-dot legend-booked"></span> Booked</div>
+        <div class="legend-item"><span class="legend-dot legend-blocked"></span> Maintenance</div>
+      </div>
+    </div>
+    <section class="availability-panel glass" style="padding: 16px;">
+      <header style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 class="section-title" style="margin: 0;">Availability</h2>
+          <p class="muted">Operating hours {{ court.open_time|date:'H:i' }} – {{ court.close_time|date:'H:i' }} WIB</p>
+        </div>
+        <p class="court-price">Rp {{ court.price_per_hour|floatformat:0 }} / hour</p>
+      </header>
+      <div class="date-strip" data-availability-dates>
+        {% for day in days %}
+          <button type="button" class="pill {% if forloop.first %}active{% endif %}" data-date="{{ day|date:'Y-m-d' }}">{{ day|date:'D' }}<br />{{ day|date:'d' }}</button>
+        {% endfor %}
+      </div>
+      <div class="slot-grid" data-availability-slots data-court-id="{{ court.id }}"></div>
+    </section>
+  </article>
+</section>
+{% endblock %}
+
+{% block modals %}
+<div class="booking-modal" id="booking-modal" aria-hidden="true">
+  <div class="modal-content glass">
+    <header style="display:flex; justify-content: space-between; align-items: center;">
+      <h2 class="section-title" style="margin:0;">Confirm booking</h2>
+      <button type="button" class="modal-close" data-modal-close>&times;</button>
+    </header>
+    <div class="booking-summary">
+      <div class="booking-summary-row">
+        <span>Date</span>
+        <span data-modal-date></span>
+      </div>
+      <div class="booking-summary-row">
+        <span>Time</span>
+        <span data-modal-time></span>
+      </div>
+      <div class="booking-summary-row">
+        <span>Subtotal</span>
+        <span data-modal-price></span>
+      </div>
+    </div>
+    <form>
+      {% csrf_token %}
+      <button type="submit" class="btn-primary" style="width: 100%; height: 48px;">Create booking (hold 10 min)</button>
+    </form>
+    <p class="muted" style="font-size: 0.875rem;">Payment is mocked for demo. Holds expire after 10 minutes to free up availability.</p>
+  </div>
+</div>
+{% endblock %}

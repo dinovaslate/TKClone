@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse courts | Arcadia Courts{% endblock %}
+
+{% block content %}
+<section class="courts-section">
+  <header class="section-header">
+    <h1 class="section-title">Find your perfect pitch</h1>
+    <p class="muted">Filter by surface, price, and availability to lock in your preferred slot.</p>
+  </header>
+  <div class="filters-bar glass">
+    <form data-search-form>
+      <div class="search-grid">
+        <div class="search-field">
+          <label for="list-query">Search</label>
+          <input id="list-query" data-search-input type="text" name="query" placeholder="Court name or location" autocomplete="off" />
+        </div>
+        <div class="search-field">
+          <label for="list-surface">Surface</label>
+          <select id="list-surface" data-search-input name="surface">
+            <option value="">Any</option>
+            <option value="synthetic">Synthetic</option>
+            <option value="natural">Natural</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label for="list-min-price">Min Price</label>
+          <input id="list-min-price" data-search-input type="number" name="min_price" min="0" step="50000" />
+        </div>
+        <div class="search-field">
+          <label for="list-max-price">Max Price</label>
+          <input id="list-max-price" data-search-input type="number" name="max_price" min="0" step="50000" />
+        </div>
+      </div>
+      <button class="btn-primary" type="submit">Apply filters</button>
+    </form>
+  </div>
+  <div class="courts-grid" data-courts-grid>
+    <p class="muted">Start by adjusting the filters above.</p>
+  </div>
+</section>
+{% endblock %}
