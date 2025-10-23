@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review + Detail Catalog — Haikyuu Court</title>
+  <style>
+    :root {
+      --g-100: #D9ED92;
+      --g-200: #B5E48C;
+      --g-300: #99D98C;
+      --g-400: #76C893;
+      --g-500: #52B69A;
+      --g-600: #34A0A4;
+      --g-700: #168AAD;
+      --g-800: #1A759F;
+      --g-900: #1E6091;
+      --g-1000: #184E77;
+      --bg: #0C2532;
+      --surface: rgba(255, 255, 255, .06);
+      --surface-2: rgba(255, 255, 255, .08);
+      --stroke: rgba(255, 255, 255, .14);
+      --text: #E7F5FF;
+      --muted: #B8D0E0;
+      --white: #fff;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      --radius-xl: 18px;
+      --w-page: 1120px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 10% -10%, rgba(118, 200, 147, .25), transparent 70%),
+        radial-gradient(1000px 600px at 90% 0%, rgba(26, 117, 159, .25), transparent 70%),
+        linear-gradient(180deg, #08202A 0%, #05161D 100%);
+      -webkit-font-smoothing: antialiased
+    }
+
+    /* Topbar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(4, 18, 26, .72);
+      backdrop-filter: saturate(120%) blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, .06)
+    }
+
+    .topbar__inner {
+      max-width: var(--w-page);
+      margin: auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 14px 18px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--text)
+    }
+
+    .brand__logo {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--g-600), var(--g-900));
+      box-shadow: var(--shadow);
+      font-size: 18px
+    }
+
+    .nav {
+      display: flex;
+      gap: 26px;
+      flex: 1
+    }
+
+    .nav__link {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: .2px;
+      padding: 8px 6px;
+      border-radius: 10px
+    }
+
+    .nav__link:hover {
+      color: var(--white);
+      background: var(--surface)
+    }
+
+    .nav__link.is-active {
+      color: var(--white);
+      background: var(--surface-2)
+    }
+
+    .user {
+      color: var(--white);
+      font-weight: 600;
+      margin-left: auto
+    }
+
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: none;
+      border: 0
+    }
+
+    .burger span {
+      width: 22px;
+      height: 2px;
+      background: #cfe8f3;
+      display: block;
+      border-radius: 2px
+    }
+
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 18px;
+      max-width: var(--w-page);
+      margin: auto
+    }
+
+    img {
+      object-fit: cover;
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .mobile-nav .nav__link {
+      padding: 10px 12px;
+      border: 1px solid var(--stroke);
+      border-radius: 10px
+    }
+
+    /* Page */
+    .page {
+      padding: 34px 18px 80px
+    }
+
+    .page__inner {
+      max-width: var(--w-page);
+      margin: auto
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .05));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow)
+    }
+
+    .section__title {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: .2px
+    }
+
+    .section__text {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    /* Detail */
+    .detail {
+      display: grid;
+      grid-template-columns: 742px 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 24px 24px;
+      align-items: start
+    }
+
+    .detail__media {
+      grid-column: 1/2
+    }
+
+    .media-card {
+      margin: 0;
+      border-radius: 18px;
+      overflow: hidden
+    }
+
+    .media-placeholder {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px
+    }
+
+    .detail__aside {
+      grid-column: 2/3;
+      display: grid;
+      gap: 18px
+    }
+
+    .addon {
+      overflow: hidden
+    }
+
+    .addon__banner {
+      padding: 10px 14px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--g-600), var(--g-1000));
+      border-bottom: 1px solid var(--stroke)
+    }
+
+    .addon__body {
+      display: grid;
+      gap: 16px;
+      padding: 16px
+    }
+
+    .addon__art {
+      height: 160px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--g-100) 0%, var(--g-600) 50%, var(--g-1000) 100%);
+      border: 1px dashed rgba(255, 255, 255, .25)
+    }
+
+    .policy {
+      padding: 16px
+    }
+
+    .card__title {
+      margin: 0 0 8px;
+      font-size: 16px
+    }
+
+    .card__text,
+    .card__list {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    .card__list {
+      padding-left: 18px;
+      display: grid;
+      gap: 6px
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .detail__meta {
+      grid-column: 1/2
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .place {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.2;
+      letter-spacing: .2px
+    }
+
+    .address {
+      margin: 6px 0 0;
+      color: var(--muted)
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--stroke);
+      background: rgba(255, 255, 255, .06);
+      display: grid;
+      place-items: center
+    }
+
+    .heart {
+      width: 18px;
+      height: 18px;
+      display: block;
+      background:
+        radial-gradient(circle at 30% 40%, #ff6b6b 0 60%, transparent 61%),
+        radial-gradient(circle at 70% 40%, #ff8787 0 60%, transparent 61%),
+        linear-gradient(135deg, #ff4d6d 0 50%, #ff0 0);
+      clip-path: polygon(50% 80%, 90% 40%, 75% 20%, 50% 32%, 25% 20%, 10% 40%);
+      filter: drop-shadow(0 4px 8px rgba(255, 77, 109, .35))
+    }
+
+    .detail__grid {
+      grid-column: 1/3;
+      display: grid;
+      grid-template-columns: 742px 1fr;
+      gap: 24px
+    }
+
+    .section {
+      padding: 18px
+    }
+
+    .facilities {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 18px;
+      color: var(--muted)
+    }
+
+    /* Booking */
+    .booking {
+      margin-top: 26px;
+      padding: 18px
+    }
+
+    .booking__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px
+    }
+
+    .calendar {
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, .1)
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: linear-gradient(90deg, var(--g-600), var(--g-1000));
+      font-weight: 700
+    }
+
+    .days span {
+      padding: 10px 8px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, .15)
+    }
+
+    .days span:last-child {
+      border-right: 0
+    }
+
+    .grid {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr)
+    }
+
+    .cell {
+      padding: 16px 0;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, .06);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .cell:nth-child(7n) {
+      border-right: 0
+    }
+
+    .cell:hover {
+      background: rgba(255, 255, 255, .08)
+    }
+
+    .cell.is-muted {
+      opacity: .45
+    }
+
+    /* Reviews */
+    .reviews {
+      margin-top: 26px
+    }
+
+    .reviews__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px
+    }
+
+    .review {
+      padding: 16px;
+      margin-bottom: 14px
+    }
+
+    .review__head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px
+    }
+
+    .review__name {
+      margin: 0
+    }
+
+    .stars {
+      letter-spacing: 2px
+    }
+
+    .score {
+      margin-left: auto;
+      font-weight: 700
+    }
+
+    .score .sub {
+      opacity: .6;
+      font-weight: 600
+    }
+
+    .review__text {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--stroke);
+      background: rgba(255, 255, 255, .08);
+      color: var(--white);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .12)
+    }
+
+    .btn--outline {
+      background: transparent
+    }
+
+    .btn--lime {
+      background: var(--g-100);
+      color: #0b2a1f;
+      border-color: rgba(0, 0, 0, .08)
+    }
+
+    .btn--lime:hover {
+      filter: brightness(.95)
+    }
+
+    /* Footer */
+    .foot {
+      margin-top: 56px;
+      background: linear-gradient(180deg, rgba(24, 78, 119, .95), rgba(17, 53, 82, .95));
+      color: #e9f2f9;
+      border-top: 1px solid rgba(255, 255, 255, .12)
+    }
+
+    .foot__inner {
+      max-width: var(--w-page);
+      margin: auto;
+      display: grid;
+      gap: 22px;
+      grid-template-columns: 280px 1fr 180px 180px;
+      padding: 26px 18px
+    }
+
+    .brand__logo--lg {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 10px
+    }
+
+    .addr {
+      font-style: normal;
+      color: #cfe0ea
+    }
+
+    .contacts,
+    .links {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px
+    }
+
+    .links a {
+      color: #e9f2f9;
+      text-decoration: none
+    }
+
+    .links a:hover {
+      text-decoration: underline
+    }
+
+    .foot__bar {
+      border-top: 1px solid rgba(255, 255, 255, .15);
+      max-width: var(--w-page);
+      margin: auto;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px
+    }
+
+    .foot__legal {
+      display: flex;
+      gap: 16px
+    }
+
+    .foot__legal a {
+      color: #e9f2f9;
+      text-decoration: none;
+      opacity: .85
+    }
+
+    .foot__legal a:hover {
+      opacity: 1
+    }
+
+    /* Responsive safeguard at 768px */
+    @media (max-width:768px) {
+      .nav {
+        display: none
+      }
+
+      .burger {
+        display: flex;
+        margin-left: auto
+      }
+
+      .mobile-nav {
+        display: flex
+      }
+
+      .mobile-nav[hidden] {
+        display: none
+      }
+
+      .detail {
+        grid-template-columns: 1fr
+      }
+
+      .detail__grid {
+        grid-template-columns: 1fr
+      }
+
+      .foot__inner {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#" aria-label="Raggospace Home">
+        <div class="brand__logo" aria-hidden="true">🐾</div>
+      </a>
+      <nav class="nav"><a class="nav__link is-active" href="#">Home</a><a class="nav__link" href="#">Catalog</a><a
+          class="nav__link" href="#">Wishlist</a></nav>
+      <div class="user">biba</div>
+      <button class="burger" aria-label="Toggle navigation" aria-expanded="false"
+        aria-controls="mobileNav"><span></span><span></span><span></span></button>
+    </div>
+    <nav id="mobileNav" class="mobile-nav" hidden>
+      <a class="nav__link is-active" href="#">Home</a><a class="nav__link" href="#">Catalog</a><a class="nav__link"
+        href="#">Wishlist</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <div class="page__inner">
+      <section class="detail">
+        <div class="detail__media">
+          <img
+            src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&fm=jpg&q=60&w=3000"
+            style="object-fit: cover;" />
+        </div>
+        <aside class="detail__aside">
+          <div class="addon card">
+            <div class="addon__banner">Add-On</div>
+            <div class="addon__body">
+              <div class="addon__art" aria-hidden="true"></div><button class="btn btn--lime">Check Available</button>
+            </div>
+          </div>
+          <div class="policy card">
+            <h3 class="card__title">Reschedule</h3>
+            <p class="card__text">Reschedule hingga <strong>7 hari</strong> sebelum jadwal sewa. Hanya berlaku untuk
+              <strong>1 kali</strong> reschedule.
+            </p>
+          </div>
+          <div class="policy card">
+            <h3 class="card__title">Pembatalan</h3>
+            <ul class="card__list">
+              <li>Reservasi tidak dapat dibatalkan dan tiket berlaku refund.</li>
+              <li>Tidak ada refund</li>
+            </ul>
+          </div>
+        </aside>
+        <div class="detail__meta">
+          <div class="title-row">
+            <h1 class="place">Haikyuu Court</h1><button class="icon-btn" aria-label="Favorite"><span class="heart"
+                aria-hidden="true"></span></button>
+          </div>
+          <p class="address">Jl. Wahid Hasyim No. 100, Jakarta Pusat 10340, DKI Jakarta, Indonesia</p>
+        </div>
+        <div class="detail__grid">
+          <section class="section card">
+            <h2 class="section__title">Description</h2>
+            <p class="section__text">Welcome to Joglo Padel Club, the city’s premier padel venue that beautifully blends
+              sport with Javanese culture. As the only padel club in town adorned with authentic Joglo Javanese
+              architecture and cultural elements, Joglo Padel Club offers a unique and immersive experience for players
+              of all levels. Step into our beautifully crafted joglo-inspired courts, surrounded by traditional wooden
+              carvings, intricate motifs, and serene ambiance that reflect the rich heritage of Java. Whether you’re a
+              seasoned padel enthusiast or a curious newcomer, Joglo Padel Club provides a perfect harmony of sport,
+              culture, and hospitality. Come experience the game in a setting that celebrates Java’s timeless elegance
+              and vibrant traditions. please kindly contact our staff for further information +6282232338888</p>
+          </section>
+          <section class="section card">
+            <h2 class="section__title">Facilities</h2>
+            <ul class="facilities">
+              <li>🚻 Toilet</li>
+              <li>🍽️ Cafe/ Resto</li>
+              <li>🅿️ Parker Mobil</li>
+              <li>🎲 Ruang Ganti</li>
+              <li>🚿 Shower Room</li>
+              <li>🎟️ Tribun</li>
+              <li>📶 Wifi</li>
+              <li>🎓 Coaching</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="booking card">
+        <div class="booking__head">
+          <h2 class="section__title">Booking Here</h2>
+          <div class="month pill">October</div>
+        </div>
+        <div class="calendar">
+          <div class="days">
+            <span>Monday</span><span>Tuesday</span><span>Wednesday</span><span>Thursday</span><span>Friday</span><span>Saturday</span><span>Sunday</span>
+          </div>
+          <ol class="grid">
+            <li class="cell">2</li>
+            <li class="cell">3</li>
+            <li class="cell">4</li>
+            <li class="cell">5</li>
+            <li class="cell">6</li>
+            <li class="cell">7</li>
+            <li class="cell">8</li>
+            <li class="cell">9</li>
+            <li class="cell">10</li>
+            <li class="cell">11</li>
+            <li class="cell">12</li>
+            <li class="cell">13</li>
+            <li class="cell">14</li>
+            <li class="cell">15</li>
+            <li class="cell">16</li>
+            <li class="cell">17</li>
+            <li class="cell">18</li>
+            <li class="cell">19</li>
+            <li class="cell">20</li>
+            <li class="cell">21</li>
+            <li class="cell">22</li>
+            <li class="cell">23</li>
+            <li class="cell">24</li>
+            <li class="cell">25</li>
+            <li class="cell">26</li>
+            <li class="cell">27</li>
+            <li class="cell">28</li>
+            <li class="cell">29</li>
+            <li class="cell">30</li>
+            <li class="cell">31</li>
+            <li class="cell is-muted">1</li>
+            <li class="cell is-muted">2</li>
+            <li class="cell is-muted">3</li>
+            <li class="cell is-muted">4</li>
+            <li class="cell is-muted">5</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="reviews">
+        <div class="reviews__head">
+          <h2 class="section__title">Review</h2><button class="btn btn--outline">Add Review</button>
+        </div>
+        <article class="review card">
+          <header class="review__head">
+            <h3 class="review__name">Bilqis Nesrina</h3>
+            <div class="stars" aria-label="5.0 out of 5">★★★★★</div>
+            <div class="score">5.0 <span class="sub">/ 5.0</span></div>
+          </header>
+          <p class="review__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus viverra diam vel
+            ultricies vehicula. In volutpat auctor posuere. Suspendisse ultricies mi in venenatis iaculis. Integer sed
+            risus egestas, ornare enim in, viverra dolor.</p>
+        </article>
+        <article class="review card">
+          <header class="review__head">
+            <h3 class="review__name">Max Verstappen</h3>
+            <div class="stars" aria-label="4.0 out of 5">★★★★☆</div>
+            <div class="score">4.0 <span class="sub">/ 5.0</span></div>
+          </header>
+          <p class="review__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus viverra diam vel
+            ultricies vehicula. In volutpat auctor posuere. Suspendisse ultricies mi in venenatis iaculis, Integer sed
+            risus egestas, ornare enim in, viverra dolor.</p>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__inner">
+      <div class="foot__col foot__brand">
+        <div class="brand__logo brand__logo--lg" aria-hidden="true">🐾</div>
+        <address class="addr">Jl. Wahid Hasyim No. 100<br />Jakarta Pusat 10340<br />DKI Jakarta, Indonesia</address>
+      </div>
+      <div class="foot__col">
+        <h4>Your Next Game is Just a Tap Away.</h4>
+        <ul class="contacts">
+          <li>📞 021 - 1234 5678</li>
+          <li>🌐 raggospace</li>
+          <li>✉️ raggospace@gmail.com</li>
+        </ul>
+      </div>
+      <div class="foot__col">
+        <h5>Company</h5>
+        <ul class="links">
+          <li><a href="#">About Raggospace</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Logo and trademark</a></li>
+        </ul>
+      </div>
+      <div class="foot__col">
+        <h5>Support</h5>
+        <ul class="links">
+          <li><a href="#">Supports</a></li>
+          <li><a href="#">Contacts</a></li>
+          <li><a href="#">Partnership</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot__bar"><span>2025 Raggospace All Right Served</span>
+      <nav class="foot__legal"><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Code of Conduct</a></nav>
+    </div>
+  </footer>
+
+  <script>
+    const burger = document.querySelector('.burger');
+    const mobileNav = document.getElementById('mobileNav');
+    if (burger && mobileNav) { burger.addEventListener('click', () => { const isHidden = mobileNav.hasAttribute('hidden'); if (isHidden) mobileNav.removeAttribute('hidden'); else mobileNav.setAttribute('hidden', ''); burger.setAttribute('aria-expanded', String(isHidden)); }); }
+    document.querySelectorAll('.calendar .cell').forEach(c => c.addEventListener('click', () => c.classList.toggle('is-selected')));
+    const style = document.createElement('style'); style.textContent = `.calendar .cell.is-selected{outline:2px solid rgba(217,237,146,.95);background:rgba(217,237,146,.12)}`; document.head.appendChild(style);
+  </script>
+</body>
+
+</html>
