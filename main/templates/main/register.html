@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Register • ArenaRent{% endblock title %}
+{% block body_class %}auth-layout{% endblock body_class %}
+
+{% block content %}
+  <section class="auth-card">
+    <div class="auth-illustration">
+      <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d" alt="Football training" />
+    </div>
+    <div class="auth-form">
+      <h1>Create your account</h1>
+      <p class="subtitle">Join ArenaRent and unlock the best football venues around you.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+          {% for field in form %}
+            <label class="form-field">
+              <span class="label">{{ field.label }}</span>
+              {{ field }}
+              {% if field.errors %}
+                <span class="field-error">{{ field.errors|join:', ' }}</span>
+              {% endif %}
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.non_field_errors %}
+          <div class="form-errors">{{ form.non_field_errors|join:', ' }}</div>
+        {% endif %}
+        <div class="form-actions">
+          <button type="submit" class="button primary">Register</button>
+          <a href="{% url 'main:login' %}" class="button ghost">Back to login</a>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock content %}

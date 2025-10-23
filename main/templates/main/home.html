@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Home • ArenaRent{% endblock title %}
+
+{% block content %}
+  <section class="hero">
+    <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d" alt="Football field" class="hero-image" />
+    <div class="hero-overlay">
+      <div class="hero-text">
+        <span class="eyebrow">Play like a pro</span>
+        <h1>Find and book the perfect pitch for your next match</h1>
+        <p>Filter by location, category, and budget to secure the court that fits your team.</p>
+      </div>
+      <form method="get" class="filter-form">
+        <div class="filter-field">
+          {{ filter_form.city.label_tag }}
+          {{ filter_form.city }}
+        </div>
+        <div class="filter-field">
+          {{ filter_form.category.label_tag }}
+          {{ filter_form.category }}
+        </div>
+        <div class="filter-field">
+          {{ filter_form.price.label_tag }}
+          {{ filter_form.price }}
+        </div>
+        <button type="submit" class="button primary">Search venues</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="section">
+    <header class="section-header">
+      <div>
+        <span class="eyebrow">Top picks</span>
+        <h2>Most popular venues</h2>
+      </div>
+      <a href="{% url 'main:catalog' %}" class="link">View all venues →</a>
+    </header>
+    <div class="card-grid">
+      {% for venue in popular_venues %}
+        {% include 'main/partials/venue_card.html' with venue=venue wishlist_ids=wishlist_ids %}
+      {% empty %}
+        <p>No bookings yet. Be the first to reserve a court!</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <header class="section-header">
+      <div>
+        <span class="eyebrow">Recommended for you</span>
+        <h2>Venues based on your filters</h2>
+      </div>
+    </header>
+    <div class="card-grid">
+      {% for venue in venues %}
+        {% include 'main/partials/venue_card.html' with venue=venue wishlist_ids=wishlist_ids %}
+      {% empty %}
+        <div class="empty-state">
+          <h3>No venues match your filters</h3>
+          <p>Try adjusting your location, category, or price preferences.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock content %}
