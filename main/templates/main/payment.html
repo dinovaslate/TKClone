@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block extra_head %}
+<title>Pembayaran | {{ booking.venue.name }}</title>
+<style>
+  body{margin:0;font-family:"Poppins",sans-serif;color:#EAFBF9;background:linear-gradient(180deg,#061720 0%,#031017 100%);min-height:100vh}
+  .container{width:min(720px,92vw);margin-inline:auto}
+  header{padding:40px 0 10px;text-align:center}
+  header h1{margin:0;font-size:30px}
+  header p{margin:8px auto 0;color:#B9E5E1}
+  .card{border:1px solid rgba(47,193,182,.35);border-radius:20px;background:linear-gradient(180deg,rgba(12,38,46,.92),rgba(6,23,32,.92));padding:26px;box-shadow:0 22px 52px rgba(0,0,0,.5);display:grid;gap:18px}
+  .summary{display:grid;gap:12px}
+  .row{display:flex;justify-content:space-between;color:#B9E5E1}
+  .total{font-size:22px;font-weight:700;color:#C9FFF0}
+  .methods{display:grid;gap:12px;margin-top:10px}
+  .methods form{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(47,193,182,.35);border-radius:14px;padding:12px 16px;background:rgba(6,25,32,.8)}
+  .methods button{border:none;border-radius:12px;padding:10px 16px;font-weight:700;background:linear-gradient(135deg,#C9FFF0,#2FC1B6);color:#041417;cursor:pointer}
+  .addon-list{border-top:1px solid rgba(47,193,182,.2);padding-top:12px;color:#B9E5E1}
+</style>
+{% endblock extra_head %}
+{% block content %}
+<header>
+  <div class="container">
+    <h1>Pembayaran Booking</h1>
+    <p>{{ booking.venue.name }} • {{ booking.slot.date|date:"j F Y" }} {{ booking.slot.start_time|time:"H:i" }} – {{ booking.slot.end_time|time:"H:i" }}</p>
+  </div>
+</header>
+<section class="container">
+  <article class="card">
+    <div class="summary">
+      <div class="row"><span>Harga lapangan</span><span>Rp {{ booking.slot.estimated_price|intcomma }}</span></div>
+      <div class="row"><span>DP (dibayar sekarang)</span><span>Rp {{ booking.deposit_amount|intcomma }}</span></div>
+      <div class="row total"><span>Total yang harus dibayar</span><span>Rp {{ booking.total_price|intcomma }}</span></div>
+    </div>
+    <div class="addon-list">
+      <strong>Add-on</strong>
+      {% if booking.addons.count %}
+        <ul>
+          {% for addon in booking.addons.all %}
+            <li>{{ addon.name }} – Rp {{ addon.price|intcomma }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Tidak ada add-on dipilih.</p>
+      {% endif %}
+    </div>
+    <div class="methods">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="method" value="qris">
+        <span>Pembayaran melalui QRIS</span>
+        <button type="submit">Bayar dengan QRIS</button>
+      </form>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="method" value="gopay">
+        <span>Pembayaran melalui GoPay</span>
+        <button type="submit">Bayar dengan GoPay</button>
+      </form>
+    </div>
+  </article>
+</section>
+{% endblock content %}
