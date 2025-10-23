@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block extra_head %}
+<title>{{ venue.name }} | RagaSpace</title>
+<style>
+  :root {
+    --g-100: #D9ED92;
+    --g-300: #99D98C;
+    --g-500: #52B69A;
+    --g-600: #34A0A4;
+    --g-700: #168AAD;
+    --g-800: #1A759F;
+    --g-900: #1E6091;
+    --bg: #0C2532;
+    --surface: rgba(255, 255, 255, .06);
+    --surface-2: rgba(255, 255, 255, .08);
+    --stroke: rgba(255, 255, 255, .14);
+    --text: #E7F5FF;
+    --muted: #B8D0E0;
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    color: var(--text);
+    background: radial-gradient(1200px 700px at 10% -10%, rgba(118, 200, 147, .25), transparent 70%),
+      radial-gradient(1000px 600px at 90% 0%, rgba(26, 117, 159, .25), transparent 70%),
+      linear-gradient(180deg, #08202A 0%, #05161D 100%);
+    min-height: 100vh;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(4, 18, 26, .72);
+    backdrop-filter: saturate(120%) blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+  }
+
+  .topbar__inner {
+    max-width: 1120px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 16px 18px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+
+  .brand__logo {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--g-600), var(--g-900));
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  .nav {
+    display: flex;
+    gap: 26px;
+  }
+
+  .nav a {
+    color: var(--muted);
+    font-weight: 600;
+    padding: 8px 6px;
+    border-radius: 10px;
+  }
+
+  .nav a.active {
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .user {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logout {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: rgba(12, 40, 52, .8);
+    display: grid;
+    place-items: center;
+  }
+
+  .page {
+    padding: 34px 18px 80px;
+  }
+
+  .page__inner {
+    max-width: 1120px;
+    margin: auto;
+    display: grid;
+    gap: 28px;
+  }
+
+  .detail {
+    display: grid;
+    grid-template-columns: minmax(0, 640px) 1fr;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .media-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--stroke);
+    background: var(--surface);
+    box-shadow: 0 16px 40px rgba(0,0,0,.45);
+  }
+
+  .media-card img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+  }
+
+  .summary {
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    border-radius: var(--radius);
+    border: 1px solid var(--stroke);
+    padding: 22px;
+    display: grid;
+    gap: 16px;
+    box-shadow: 0 18px 46px rgba(0,0,0,.45);
+  }
+
+  .summary h1 {
+    margin: 0;
+    font-size: 30px;
+  }
+
+  .summary .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .pill-row span {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(26,117,159,.22);
+    border: 1px solid var(--stroke);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .summary .price {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .summary .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .summary .actions a,
+  .summary .actions form button {
+    flex: 1;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  .summary .actions a {
+    background: linear-gradient(135deg, var(--g-500), var(--g-700));
+    color: #032027;
+    text-align: center;
+  }
+
+  .summary .actions form {
+    flex: 1;
+  }
+
+  .summary .actions form button {
+    width: 100%;
+    background: rgba(12,42,50,.8);
+    color: #ff9db0;
+    border: 1px solid rgba(255,157,176,.4);
+  }
+
+  .card-section {
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: 0 16px 42px rgba(0,0,0,.4);
+  }
+
+  .card-section h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+  }
+
+  .calendar a {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(26,117,159,.4);
+    background: rgba(26,117,159,.18);
+    color: var(--text);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .calendar a:hover {
+    border-color: var(--g-500);
+  }
+
+  .reviews {
+    display: grid;
+    gap: 18px;
+  }
+
+  .review-card {
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(26,117,159,.35);
+    background: rgba(12,40,52,.65);
+    box-shadow: 0 12px 28px rgba(0,0,0,.3);
+  }
+
+  .review-card header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  form.review {
+    display: grid;
+    gap: 12px;
+  }
+
+  form.review textarea,
+  form.review select {
+    width: 100%;
+    border-radius: 12px;
+    background: rgba(12,42,50,.8);
+    border: 1px solid rgba(26,117,159,.45);
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: inherit;
+  }
+
+  form.review button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--g-500), var(--g-700));
+    color: #032027;
+    cursor: pointer;
+  }
+
+  .message-bar {
+    width: min(720px, 92vw);
+    margin: 18px auto 0;
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(26,117,159,.4);
+    background: rgba(12,42,50,.7);
+    color: var(--g-100);
+    font-weight: 600;
+  }
+
+  @media (max-width: 960px) {
+    .detail {
+      grid-template-columns: 1fr;
+    }
+    .media-card img { height: 320px; }
+  }
+</style>
+{% endblock extra_head %}
+{% block content %}
+<header class="topbar">
+  <div class="topbar__inner">
+    <a href="{% url 'main:home' %}" class="brand"><span class="brand__logo">⚽</span> RagaSpace</a>
+    <nav class="nav">
+      <a href="{% url 'main:home' %}">Home</a>
+      <a href="{% url 'main:catalog' %}">Catalog</a>
+      <a href="{% url 'main:wishlist' %}">Wishlist</a>
+    </nav>
+    <div class="user">
+      <span>{{ request.user.username }}</span>
+      <a class="logout" href="{% url 'main:logout' %}">⏻</a>
+    </div>
+  </div>
+</header>
+{% if messages %}
+  {% for message in messages %}
+    <div class="message-bar">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<main class="page">
+  <div class="page__inner">
+    <section class="detail">
+      <figure class="media-card">
+        <img src="{{ venue.hero_image_url|default:venue.card_image_url }}" alt="{{ venue.name }}">
+      </figure>
+      <article class="summary">
+        <h1>{{ venue.name }}</h1>
+        <div class="meta">
+          <span>📍 {{ venue.address|default:venue.city }}</span>
+          <span>🎯 {{ venue.category.name }}</span>
+          <span>⭐ {% if venue.average_rating %}{{ venue.average_rating }}{% else %}Belum ada review{% endif %}</span>
+          <span>🔥 {{ venue.bookings_count }} total booking</span>
+        </div>
+        <p>{{ venue.description|default:"Venue premium untuk pertandingan besar maupun latihan santai." }}</p>
+        <div class="pill-row">
+          {% if venue.surface %}<span>Permukaan: {{ venue.surface }}</span>{% endif %}
+          {% if venue.size %}<span>Ukuran: {{ venue.size }}</span>{% endif %}
+          <span>Harga: Rp {{ venue.price_per_hour|intcomma }}/jam</span>
+        </div>
+        <div class="actions">
+          {% if availability_dates %}
+          <a href="#booking">Check availability</a>
+          {% endif %}
+          <form method="post" action="{% url 'main:toggle_wishlist' venue.slug %}">
+            {% csrf_token %}
+            <button type="submit">{% if venue.id in wishlist_ids %}Remove from wishlist{% else %}Tambahkan ke wishlist{% endif %}</button>
+          </form>
+        </div>
+      </article>
+    </section>
+    <section id="booking" class="card-section">
+      <h2>Booking Calendar</h2>
+      <p>Pilih tanggal untuk melihat jam yang tersedia dan lanjutkan proses booking.</p>
+      {% if availability_dates %}
+        <div class="calendar">
+          {% for item in availability_dates %}
+            <a href="{% url 'main:booking_schedule' venue.slug item.value|date:'Y-m-d' %}">{{ item.label }}</a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Belum ada jadwal yang tersedia bulan ini. Coba lagi nanti.</p>
+      {% endif %}
+    </section>
+    <section class="card-section">
+      <h2>Review Komunitas</h2>
+      <div class="reviews">
+        {% for review in reviews %}
+          <article class="review-card">
+            <header>
+              <strong>{{ review.user.username }}</strong>
+              <span>⭐ {{ review.rating }} • {{ review.created_at|date:"j M Y" }}</span>
+            </header>
+            <p>{{ review.comment }}</p>
+          </article>
+        {% empty %}
+          <p>Belum ada review. Jadilah yang pertama membagikan pengalamanmu!</p>
+        {% endfor %}
+        <form method="post" class="review">
+          {% csrf_token %}
+          <label>Rating
+            {{ review_form.rating }}
+          </label>
+          <label>Review
+            {{ review_form.comment }}
+          </label>
+          <button type="submit">Kirim Review</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock content %}

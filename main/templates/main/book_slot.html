@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block extra_head %}
+<title>Pilih Add-on | {{ venue.name }}</title>
+<style>
+  body{margin:0;font-family:"Poppins",sans-serif;color:#EAFBF9;background:linear-gradient(180deg,#04141b 0%,#02090d 100%);min-height:100vh}
+  a{text-decoration:none;color:inherit}
+  .container{width:min(960px,92vw);margin-inline:auto}
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(4,16,23,.85);border-bottom:1px solid rgba(47,193,182,.35);backdrop-filter:blur(12px)}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .brand .logo{width:32px;height:32px;border-radius:10px;background:conic-gradient(from 160deg,#C9FFF0,#2FC1B6,#0F8793);display:grid;place-items:center;color:#041417}
+  .actions{display:flex;gap:12px;align-items:center}
+  .icon{width:38px;height:38px;border-radius:12px;border:1px solid rgba(47,193,182,.35);display:grid;place-items:center;background:#061620}
+  .hero{padding:60px 0 24px}
+  .hero h1{margin:0;font-size:30px}
+  .hero p{margin:12px 0 0;color:#B9E5E1}
+  .card{border:1px solid rgba(47,193,182,.35);border-radius:20px;background:linear-gradient(180deg,rgba(18,58,66,.92),rgba(9,28,33,.92));padding:24px;box-shadow:0 24px 58px rgba(0,0,0,.5);display:grid;gap:20px}
+  .slot-info{display:flex;flex-wrap:wrap;gap:16px;color:#B9E5E1;font-size:14px}
+  .slot-info strong{font-size:18px;color:#EAFBF9}
+  form{display:grid;gap:18px}
+  .addon-list{display:grid;gap:12px}
+  .addon-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(47,193,182,.35);background:rgba(12,38,46,.8)}
+  .addon-item label{display:flex;flex-direction:column;gap:4px;font-weight:600;cursor:pointer}
+  .addon-item span{font-size:13px;color:#B9E5E1;font-weight:400}
+  input[type=checkbox]{width:18px;height:18px;border-radius:6px;border:1px solid rgba(47,193,182,.4);background:rgba(3,17,23,.8)}
+  .summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid rgba(47,193,182,.25);padding-top:18px}
+  .summary div{font-weight:600;color:#B9E5E1}
+  button[type=submit]{border:none;border-radius:14px;padding:14px 18px;font-weight:700;background:linear-gradient(135deg,#C9FFF0,#2FC1B6);color:#041417;cursor:pointer}
+</style>
+{% endblock extra_head %}
+{% block content %}
+<header class="topbar">
+  <div class="container nav">
+    <div class="brand"><span class="logo">⚽</span> RagaSpace</div>
+    <div class="actions">
+      <span>{{ request.user.username }}</span>
+      <a class="icon" href="{% url 'main:logout' %}">⏻</a>
+    </div>
+  </div>
+</header>
+{% if messages %}
+  {% for message in messages %}
+    <div style="width:min(640px,92vw);margin:20px auto 0;padding:14px 18px;border-radius:16px;border:1px solid rgba(47,193,182,.35);background:rgba(6,28,34,.8);color:#C9FFF0;font-weight:600;text-align:center">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<section class="container hero">
+  <h1>Pilih add-on untuk {{ venue.name }}</h1>
+  <p>Slot {{ slot.date|date:"j F Y" }} • {{ slot.start_time|time:"H:i" }} – {{ slot.end_time|time:"H:i" }}</p>
+</section>
+<section class="container">
+  <article class="card">
+    <div class="slot-info">
+      <div><strong>Estimasi biaya</strong><br>Rp {{ slot.estimated_price|intcomma }}</div>
+      <div><strong>Durasi</strong><br>{{ slot.duration_hours|floatformat }} jam</div>
+      <div><strong>Venue</strong><br>{{ venue.city }} • {{ venue.category.name }}</div>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="addon-list">
+        {% if form.fields.addons.queryset %}
+          {% with selected=form.addons.value %}
+            {% for addon in form.fields.addons.queryset %}
+            <label class="addon-item" style="cursor:pointer;">
+              <input type="checkbox" name="{{ form.addons.html_name }}" value="{{ addon.pk }}" {% if selected and addon.pk|stringformat:'s' in selected %}checked{% endif %}>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <strong>{{ addon.name }}</strong>
+                <span>Rp {{ addon.price|intcomma }} • {{ addon.description|default:"Add-on premium" }}</span>
+              </div>
+            </label>
+            {% endfor %}
+          {% endwith %}
+        {% else %}
+          <p>Tidak ada add-on tambahan untuk venue ini. Langsung lanjutkan booking.</p>
+        {% endif %}
+      </div>
+      <div class="summary">
+        <div>DP minimal: Rp 10.000</div>
+        <div>Total venue: Rp {{ slot.estimated_price|intcomma }}</div>
+      </div>
+      <button type="submit">Lanjut ke pembayaran</button>
+    </form>
+  </article>
+</section>
+{% endblock content %}

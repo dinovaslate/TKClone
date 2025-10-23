@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block extra_head %}
+<title>Pembayaran Berhasil | {{ booking.venue.name }}</title>
+<style>
+  body{margin:0;font-family:"Poppins",sans-serif;color:#EAFBF9;background:radial-gradient(680px 420px at 20% -10%,rgba(47,193,182,.3),transparent 60%),linear-gradient(180deg,#04141b 0%,#02090d 100%);min-height:100vh;display:grid;place-items:center}
+  .card{width:min(520px,90vw);border:1px solid rgba(47,193,182,.35);border-radius:24px;background:linear-gradient(180deg,rgba(12,42,50,.92),rgba(6,23,32,.92));padding:34px;box-shadow:0 24px 58px rgba(0,0,0,.5);display:grid;gap:16px;text-align:center}
+  .emoji{font-size:58px}
+  h1{margin:0;font-size:30px}
+  p{margin:0;color:#B9E5E1}
+  a{color:#041417;background:linear-gradient(135deg,#C9FFF0,#2FC1B6);border-radius:14px;padding:12px 18px;font-weight:700;text-decoration:none;display:inline-block;margin-top:12px}
+</style>
+{% endblock extra_head %}
+{% block content %}
+<article class="card">
+  <div class="emoji">😊</div>
+  <h1>Pembayaran Berhasil!</h1>
+  <p>Booking kamu untuk {{ booking.venue.name }} pada {{ booking.slot.date|date:"j F Y" }} jam {{ booking.slot.start_time|time:"H:i" }} – {{ booking.slot.end_time|time:"H:i" }} telah dikonfirmasi.</p>
+  <a href="{% url 'main:home' %}">Kembali ke Home</a>
+</article>
+{% endblock content %}
