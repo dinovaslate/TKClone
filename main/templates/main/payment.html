@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Payment • {{ booking.venue.name }}{% endblock title %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="page-hero-text">
+      <h1>Complete your booking</h1>
+      <p>Secure {{ booking.venue.name }} on {{ booking.date|date:'d F Y' }} • {{ booking.time_slot }}.</p>
+    </div>
+  </section>
+
+  <section class="section payment">
+    <div class="payment-summary">
+      <h2>Invoice</h2>
+      <ul>
+        <li>
+          <span>Venue</span>
+          <span>IDR {{ booking.base_price|floatformat:0 }}</span>
+        </li>
+        <li>
+          <span>Add-ons</span>
+          <span>IDR {{ booking.addon_total|floatformat:0 }}</span>
+        </li>
+        <li class="total">
+          <span>Total</span>
+          <span>IDR {{ booking.total_price|floatformat:0 }}</span>
+        </li>
+      </ul>
+      <div class="payment-breakdown">
+        <div>
+          <span>Deposit (DP)</span>
+          <strong>IDR {{ booking.deposit_amount|floatformat:0 }}</strong>
+        </div>
+        <div>
+          <span>To be paid</span>
+          <strong>IDR {{ booking.balance_due|floatformat:0 }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="payment-actions">
+      <h2>Select payment method</h2>
+      <form method="post" class="method-form">
+        {% csrf_token %}
+        <div class="method-options">
+          <label class="method-card {% if booking.payment_method == 'qris' %}active{% endif %}">
+            <input type="radio" name="payment_method" value="qris" {% if booking.payment_method == 'qris' %}checked{% endif %} />
+            <i class="fa-solid fa-qrcode"></i>
+            <span>QRIS</span>
+          </label>
+          <label class="method-card {% if booking.payment_method == 'gopay' %}active{% endif %}">
+            <input type="radio" name="payment_method" value="gopay" {% if booking.payment_method == 'gopay' %}checked{% endif %} />
+            <i class="fa-solid fa-mobile-screen"></i>
+            <span>GoPay</span>
+          </label>
+        </div>
+        <button type="submit" class="button primary">Set payment method</button>
+        {% if method_form.errors.payment_method %}
+          <span class="field-error">{{ method_form.errors.payment_method|join:', ' }}</span>
+        {% endif %}
+      </form>
+
+      {% if booking.status == 'awaiting_confirmation' %}
+        <div class="confirmation">
+          <p><strong>Waiting for confirmation</strong>. Confirm once the payment is complete.</p>
+          <form method="post">
+            {% csrf_token %}
+            <button name="confirm" value="1" class="button success">Confirm payment</button>
+          </form>
+        </div>
+      {% else %}
+        <p class="muted">Choose a payment method to proceed to confirmation.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock content %}

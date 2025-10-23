@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Payment success • {{ booking.venue.name }}{% endblock title %}
+
+{% block content %}
+  <section class="success">
+    <div class="success-card">
+      <div class="success-icon">😊</div>
+      <h1>Booking confirmed!</h1>
+      <p>
+        {{ booking.venue.name }} is officially yours on {{ booking.date|date:'d F Y' }} at {{ booking.time_slot }}.
+        Gather your team and get ready to play.
+      </p>
+      <a href="{% url 'main:home' %}" class="button primary">Back to home</a>
+      <a href="{% url 'main:catalog' %}" class="button ghost">Book another venue</a>
+    </div>
+  </section>
+{% endblock content %}

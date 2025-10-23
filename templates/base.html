@@ -1,19 +1,65 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet" />
-    {% block meta %} {% endblock meta %}
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-mFD4b1YVvXr9NA9qsut0k98F4lPcb4XvAJkVb/V2OMYJtGSDTjSUDsG1YDQtrM9ahJvGh2+7p8nKw2V+XER7hA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="{% static 'css/site.css' %}" />
+    {% block extra_css %}{% endblock extra_css %}
+    <title>{% block title %}ArenaRent{% endblock title %}</title>
+  </head>
+  <body class="{% block body_class %}{% endblock body_class %}">
+    {% if user.is_authenticated %}
+      <header class="site-header">
+        <nav class="navbar">
+          <div class="nav-left">
+            <a href="{% url 'main:home' %}" class="brand">ArenaRent</a>
+          </div>
+          <div class="nav-center">
+            <a href="{% url 'main:home' %}" class="nav-link {% if request.path == '/home/' %}active{% endif %}">Home</a>
+            <a href="{% url 'main:catalog' %}" class="nav-link {% if request.path == '/catalog/' %}active{% endif %}">Catalog</a>
+            <a href="{% url 'main:wishlist' %}" class="nav-link {% if request.path == '/wishlist/' %}active{% endif %}">Wishlist</a>
+          </div>
+          <div class="nav-right">
+            <div class="user-chip">
+              <span class="avatar"><i class="fa-solid fa-user"></i></span>
+              <span class="username">{{ request.user.username }}</span>
+            </div>
+            <form action="{% url 'main:logout' %}" method="post">
+              {% csrf_token %}
+              <button class="logout-button" type="submit" title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </form>
+          </div>
+        </nav>
+      </header>
+    {% endif %}
 
-<body>
-    {% block content %} {% endblock content %}
-</body>
+    <main class="page-content">
+      {% if messages %}
+        <div class="toast-container">
+          {% for message in messages %}
+            <div class="toast toast-{{ message.tags|default:'info' }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock content %}
+    </main>
 
+    {% block extra_js %}{% endblock extra_js %}
+  </body>
 </html>

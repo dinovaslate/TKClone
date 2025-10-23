@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}{{ venue.name }} • ArenaRent{% endblock title %}
+
+{% block content %}
+  <section class="detail-hero">
+    <div class="detail-media">
+      <img src="{{ venue.primary_image }}" alt="{{ venue.name }}" />
+    </div>
+    <div class="detail-content">
+      <span class="eyebrow">{{ venue.category.name }}</span>
+      <h1>{{ venue.name }}</h1>
+      <p class="detail-location"><i class="fa-solid fa-location-dot"></i> {{ venue.city }}{% if venue.address %} • {{ venue.address }}{% endif %}</p>
+      <p class="detail-description">{{ venue.description }}</p>
+      <p class="detail-price">IDR {{ venue.price_per_hour|floatformat:0 }} / session</p>
+      <div class="detail-actions">
+        <a href="#booking" class="button primary">Check availability</a>
+        <form method="post" action="{% url 'main:toggle_wishlist' venue.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+          <button type="submit" class="button icon {% if in_wishlist %}active{% endif %}">
+            <i class="fa-solid fa-heart"></i>
+            <span>{% if in_wishlist %}In wishlist{% else %}Save{% endif %}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="booking">
+    <header class="section-header">
+      <div>
+        <span class="eyebrow">Booking here</span>
+        <h2>Select a date to see available courts</h2>
+      </div>
+    </header>
+    <div class="date-picker">
+      {% for date in available_dates %}
+        <a
+          class="date-chip"
+          href="{% url 'main:booking_schedule' venue.slug %}?date={{ date|date:'Y-m-d' }}"
+        >
+          <span class="day">{{ date|date:'D' }}</span>
+          <span class="date">{{ date|date:'d M' }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <header class="section-header">
+      <div>
+        <span class="eyebrow">Community feedback</span>
+        <h2>Reviews</h2>
+      </div>
+    </header>
+    <div class="reviews">
+      {% if reviews %}
+        {% for review in reviews %}
+          <article class="review">
+            <div class="review-avatar">{{ review.user.username|slice:':1'|upper }}</div>
+            <div class="review-body">
+              <div class="review-header">
+                <strong>{{ review.user.username }}</strong>
+                <span class="review-date">{{ review.created_at|date:'d M Y' }}</span>
+              </div>
+              {% if review.rating %}
+                <div class="review-rating">
+                  {% for _ in '12345' %}
+                    <i class="fa-solid fa-star{% if forloop.counter > review.rating %} empty{% endif %}"></i>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <p>{{ review.comment }}</p>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="empty-state">No reviews yet. Share your experience after your match!</p>
+      {% endif %}
+    </div>
+
+    <div class="review-form">
+      <h3>Add your review</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+          {% for field in review_form %}
+            <label class="form-field">
+              <span class="label">{{ field.label }}</span>
+              {{ field }}
+              {% if field.errors %}
+                <span class="field-error">{{ field.errors|join:', ' }}</span>
+              {% endif %}
+            </label>
+          {% endfor %}
+        </div>
+        <button type="submit" class="button primary">Post review</button>
+      </form>
+    </div>
+  </section>
+{% endblock content %}

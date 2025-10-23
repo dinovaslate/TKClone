@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Booking • {{ venue.name }}{% endblock title %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="page-hero-text">
+      <h1>Book {{ venue.name }}</h1>
+      <p>Pick an available slot on {{ selected_date|date:'d F Y' }} and choose your add-ons.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <form method="post" class="booking-form">
+      {% csrf_token %}
+      {{ form.date }}
+      <div class="booking-grid">
+        <div class="booking-panel">
+          <h2>Available time slots</h2>
+          <p class="muted">Select one time slot to reserve.</p>
+          <div class="slot-grid">
+            {% for value, label in form.fields.time_slot.choices %}
+              <label class="slot-option">
+                <input
+                  type="radio"
+                  name="time_slot"
+                  value="{{ value }}"
+                  {% if selected_time_slot == value %}checked{% endif %}
+                  required
+                />
+                <span>{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          {% if form.errors.time_slot %}
+            <span class="field-error">{{ form.errors.time_slot|join:', ' }}</span>
+          {% endif %}
+        </div>
+
+        <div class="booking-panel">
+          <h2>Add-ons</h2>
+          <p class="muted">Boost your session with professional coaches, equipment, and more.</p>
+          <div class="addon-list">
+            {% with selected=selected_addons %}
+              {% for addon in form.fields.addons.queryset %}
+                <label class="addon-option">
+                  <input
+                    type="checkbox"
+                    name="addons"
+                    value="{{ addon.pk }}"
+                    {% if addon.pk|stringformat:'s' in selected %}checked{% endif %}
+                  />
+                  <div>
+                    <strong>{{ addon.name }}</strong>
+                    {% if addon.description %}
+                      <p>{{ addon.description }}</p>
+                    {% endif %}
+                  </div>
+                  <span class="price">IDR {{ addon.price|floatformat:0 }}</span>
+                </label>
+              {% empty %}
+                <p class="muted">No add-ons available at the moment.</p>
+              {% endfor %}
+            {% endwith %}
+          </div>
+        </div>
+
+        <div class="booking-panel picks" id="picks">
+          <h2>Your picks</h2>
+          <ul class="picks-list"></ul>
+          <p class="muted" data-empty>Selected add-ons will appear here.</p>
+          <button type="submit" class="button primary">Book this slot</button>
+        </div>
+      </div>
+    </form>
+  </section>
+{% endblock content %}
+
+{% block extra_js %}
+  <script>
+    const addonInputs = document.querySelectorAll('.addon-option input[type="checkbox"]');
+    const picksList = document.querySelector('#picks .picks-list');
+    const emptyState = document.querySelector('#picks [data-empty]');
+
+    function updatePicks() {
+      picksList.innerHTML = '';
+      const selected = Array.from(addonInputs).filter((input) => input.checked);
+      if (selected.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+      selected.forEach((input) => {
+        const label = input.closest('.addon-option');
+        const name = label.querySelector('strong').textContent;
+        const price = label.querySelector('.price').textContent;
+        const item = document.createElement('li');
+        item.textContent = `${name} — ${price}`;
+        picksList.appendChild(item);
+      });
+    }
+
+    addonInputs.forEach((input) => {
+      input.addEventListener('change', updatePicks);
+    });
+
+    updatePicks();
+  </script>
+{% endblock extra_js %}

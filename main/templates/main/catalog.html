@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Catalog • ArenaRent{% endblock title %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="page-hero-text">
+      <h1>All venues</h1>
+      <p>Browse every court available on ArenaRent and filter by what matters most.</p>
+    </div>
+    <form method="get" class="filter-form inline">
+      <div class="filter-field">
+        {{ filter_form.city.label_tag }}
+        {{ filter_form.city }}
+      </div>
+      <div class="filter-field">
+        {{ filter_form.category.label_tag }}
+        {{ filter_form.category }}
+      </div>
+      <div class="filter-field">
+        {{ filter_form.price.label_tag }}
+        {{ filter_form.price }}
+      </div>
+      <button type="submit" class="button primary">Apply filters</button>
+    </form>
+  </section>
+
+  <section class="section">
+    <div class="card-grid">
+      {% for venue in venues %}
+        {% include 'main/partials/venue_card.html' with venue=venue wishlist_ids=wishlist_ids %}
+      {% empty %}
+        <div class="empty-state">
+          <h3>No venues found</h3>
+          <p>Try changing your filters or check back later for new listings.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock content %}

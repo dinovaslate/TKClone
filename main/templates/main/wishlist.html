@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Wishlist • ArenaRent{% endblock title %}
+
+{% block content %}
+  <section class="page-hero">
+    <div class="page-hero-text">
+      <h1>Your wishlist</h1>
+      <p>Every venue you’ve loved is saved here. Ready when your squad is.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="card-grid">
+      {% for venue in venues %}
+        {% include 'main/partials/venue_card.html' with venue=venue wishlist_ids=wishlist_ids %}
+      {% empty %}
+        <div class="empty-state">
+          <h3>Your wishlist is empty</h3>
+          <p>Explore the catalog and tap the heart icon to save venues you like.</p>
+          <a href="{% url 'main:catalog' %}" class="button primary">Browse catalog</a>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock content %}

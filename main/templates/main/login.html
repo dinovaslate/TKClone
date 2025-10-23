@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Login • ArenaRent{% endblock title %}
+{% block body_class %}auth-layout{% endblock body_class %}
+
+{% block content %}
+  <section class="auth-card">
+    <div class="auth-illustration">
+      <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2" alt="Football stadium" />
+    </div>
+    <div class="auth-form">
+      <h1>Welcome back</h1>
+      <p class="subtitle">Log in to manage your bookings and discover new courts.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+          {% for field in form %}
+            <label class="form-field">
+              <span class="label">{{ field.label }}</span>
+              {{ field }}
+              {% if field.errors %}
+                <span class="field-error">{{ field.errors|join:', ' }}</span>
+              {% endif %}
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.non_field_errors %}
+          <div class="form-errors">{{ form.non_field_errors|join:', ' }}</div>
+        {% endif %}
+        <div class="form-actions">
+          <button type="submit" class="button primary">Login</button>
+          <a href="{% url 'main:register' %}" class="button ghost">Create an account</a>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock content %}
