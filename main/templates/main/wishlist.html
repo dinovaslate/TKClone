@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block meta %}
+<title>RagaSpace — Wishlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint:#99D98C; --sea:#34A0A4; --teal:#168AAD; --navy:#184E77;
+    --bg:#071B20; --panel:#0c2a33; --stroke:#12444c; --text:#EAFBF9; --muted:#B9E5E1;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;color:var(--text);
+    background:
+      radial-gradient(900px 520px at 0% 0%, rgba(153,217,140,.12) 0%, transparent 60%),
+      radial-gradient(900px 520px at 100% 0%, rgba(52,160,164,.12) 0%, transparent 60%),
+      linear-gradient(180deg,#071B20 0%,#04141a 100%);
+    min-height:100vh;}
+  a{text-decoration:none;color:inherit}
+  .container{width:min(1100px,92vw);margin-inline:auto}
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(5,20,26,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 8px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff}
+  .brand .logo{width:30px;height:30px;border-radius:10px;background:conic-gradient(from 140deg,#C9FFF0,#34A0A4,#184E77);display:grid;place-items:center;color:#052534;box-shadow:0 0 0 2px rgba(255,255,255,.08) inset}
+  .links{display:flex;gap:26px}
+  .links a{color:var(--muted);font-weight:700;padding:6px 6px;border-radius:10px}
+  .links a.active,.links a.is-active{color:var(--text);background:rgba(52,160,164,.18)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .icon-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--stroke);background:#0a1d23;color:#fff;display:grid;place-items:center}
+  .logout-form{margin:0}
+  .logout-form button{width:36px;height:36px}
+  .user-chip{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);border-radius:999px;padding:6px 12px;background:rgba(52,160,164,.16);font-weight:600}
+  .user-chip .avatar{width:26px;height:26px;border-radius:50%;background:var(--mint);color:#053025;display:grid;place-items:center;font-weight:700}
+
+  header.page-head{padding:60px 0 20px;text-align:center}
+  header.page-head h1{margin:0;font-size:32px;font-weight:800}
+  header.page-head p{margin:10px auto 0;color:var(--muted);max-width:520px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:60px}
+  @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:620px){.grid{grid-template-columns:1fr}}
+
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);display:flex;flex-direction:column}
+  .card-media{position:relative;height:170px;background:#05212a}
+  .card-media img{width:100%;height:100%;object-fit:cover}
+  .card-media .badge{position:absolute;left:12px;top:12px;background:linear-gradient(135deg,#C9FFF0,#34A0A4);color:#042326;font-weight:800;font-size:12px;padding:5px 12px;border-radius:999px}
+  .card-media form{position:absolute;right:12px;top:12px}
+  .heart{width:36px;height:36px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(5,24,30,.72);display:grid;place-items:center;cursor:pointer}
+  .heart.active{background:#2d0f18;border-color:#ff9db0}
+  .card-body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .card-body h3{margin:0;font-size:18px}
+  .meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:13px}
+  .price{margin-top:auto;display:flex;align-items:center;justify-content:space-between}
+  .price .tag{font-weight:800}
+  .link{color:#C9FFF0;font-weight:700}
+  .empty-state{border:1px dashed rgba(255,255,255,.2);border-radius:20px;padding:40px;text-align:center;color:var(--muted);margin:60px auto;max-width:480px;background:rgba(10,35,43,.6)}
+
+  .toast-stack{position:fixed;top:90px;right:24px;display:grid;gap:10px;z-index:90}
+  .toast-item{padding:12px 16px;border-radius:12px;border:1px solid var(--stroke);background:rgba(7,27,32,.92);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+
+  footer{border-top:1px solid rgba(255,255,255,.08);padding:18px 0 40px;background:rgba(4,20,26,.8);text-align:center;color:var(--muted);font-size:13px}
+</style>
+{% endblock meta %}
+{% block content %}
+{% include 'main/includes/navbar.html' %}
+{% include 'main/includes/messages.html' %}
+<header class="page-head container">
+  <h1>Wishlist Kamu</h1>
+  <p>Simpan semua lapangan favoritmu di satu tempat, dan lanjutkan proses booking kapan pun kamu siap.</p>
+</header>
+<section class="container">
+  {% if venues %}
+  <div class="grid">
+    {% for venue in venues %}
+    <article class="card">
+      <div class="card-media">
+        <img src="{{ venue.cover_image }}" alt="{{ venue.name }}">
+        <span class="badge">{{ venue.category.name }}</span>
+        <form method="post" action="{% url 'main:toggle_wishlist' venue.slug %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="heart active" aria-label="Remove from wishlist">
+            ❤️
+          </button>
+        </form>
+      </div>
+      <div class="card-body">
+        <h3>{{ venue.name }}</h3>
+        <div class="meta">
+          <span>📍 {{ venue.city.name }}</span>
+          <span>⭐ {{ venue.average_rating|default:'5.0' }}</span>
+        </div>
+        <div class="price">
+          <span class="tag">Rp {{ venue.price_per_hour|floatformat:0 }}/jam</span>
+          <a class="link" href="{% url 'main:product_detail' venue.slug %}">View Product →</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>Belum ada wishlist</h3>
+    <p>Temukan lapangan favoritmu di halaman catalog dan klik ikon hati untuk menyimpannya.</p>
+    <p><a class="link" href="{% url 'main:catalog' %}">Jelajahi Catalog →</a></p>
+  </div>
+  {% endif %}
+</section>
+<footer>
+  <div class="container">© {% now 'Y' %} RagaSpace — Tetap aktif, tetap terhubung.</div>
+</footer>
+{% endblock content %}
