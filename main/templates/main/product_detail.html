@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block meta %}
+<title>{{ venue.name }} — RagaSpace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g-100: #D9ED92; --g-200: #B5E48C; --g-300: #99D98C; --g-400: #76C893; --g-500: #52B69A;
+    --g-600: #34A0A4; --g-700: #168AAD; --g-800: #1A759F; --g-900: #1E6091; --g-1000: #184E77;
+    --bg: #0C2532; --surface: rgba(255, 255, 255, .06); --surface-2: rgba(255, 255, 255, .08);
+    --stroke: rgba(255, 255, 255, .14); --text: #E7F5FF; --muted: #B8D0E0; --white: #fff;
+    --radius-xl: 18px; --shadow: 0 18px 40px rgba(0,0,0,.45);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;color:var(--text);
+    background:radial-gradient(1200px 700px at 10% -10%, rgba(118, 200, 147, .25), transparent 70%),
+      radial-gradient(1000px 600px at 90% 0%, rgba(26, 117, 159, .25), transparent 70%),
+      linear-gradient(180deg, #08202A 0%, #05161D 100%);
+    min-height:100vh;}
+  a{text-decoration:none;color:inherit}
+  .container{max-width:1120px;margin:0 auto;width:92vw}
+  .topbar{position:sticky;top:0;z-index:40;background:rgba(4,18,26,.72);backdrop-filter:saturate(120%) blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav{display:flex;align-items:center;gap:28px;padding:14px 18px}
+  .brand{display:flex;align-items:center;text-decoration:none;color:var(--text);gap:12px;font-weight:800}
+  .brand .logo{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg, var(--g-600), var(--g-900));box-shadow:var(--shadow);font-size:18px}
+  .links{display:flex;gap:26px;flex:1}
+  .links a{color:var(--muted);font-weight:600;padding:8px 6px;border-radius:10px}
+  .links a.is-active,.links a.active{color:var(--white);background:var(--surface-2)}
+  .user-chip{margin-left:auto;color:var(--white);font-weight:600;display:flex;gap:8px;align-items:center}
+  .actions{display:flex;gap:10px;align-items:center}
+  .icon-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--stroke);background:#0D1D23;color:#fff;display:grid;place-items:center}
+  .logout-form{margin:0}
+  .logout-form button{width:36px;height:36px}
+
+  .toast-stack{position:fixed;top:90px;right:24px;display:grid;gap:10px;z-index:80}
+  .toast-item{padding:12px 16px;border-radius:12px;border:1px solid var(--stroke);background:rgba(7,27,32,.92);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+
+  main.page{padding:34px 18px 80px}
+  .page__inner{max-width:1120px;margin:auto;display:grid;gap:28px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));border:1px solid var(--stroke);border-radius:var(--radius-xl);box-shadow:var(--shadow)}
+  .detail{display:grid;grid-template-columns:742px 1fr;gap:24px;align-items:start}
+  .gallery{border-radius:18px;overflow:hidden}
+  .gallery img{width:100%;height:100%;object-fit:cover}
+  .detail__info{display:flex;flex-direction:column;gap:18px}
+  .detail__info h1{margin:0;font-size:30px}
+  .pill{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(12,37,50,.65);color:var(--muted);font-weight:600;font-size:13px}
+  .badge{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:999px;background:linear-gradient(135deg,var(--g-400),var(--g-700));color:#052534;font-weight:800;font-size:12px}
+  .cta-group{display:flex;gap:12px;flex-wrap:wrap}
+  .cta{border-radius:14px;border:1px solid rgba(255,255,255,.16);padding:12px 18px;font-weight:700;background:linear-gradient(135deg,var(--g-600),var(--g-800));color:#042326;box-shadow:0 12px 32px rgba(0,0,0,.45);cursor:pointer}
+  .cta.secondary{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.18)}
+  .description{color:var(--muted);line-height:1.6}
+
+  .calendar{padding:24px}
+  .calendar h3{margin:0 0 12px;font-size:20px}
+  .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+  .day{border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;text-align:center;min-height:80px;display:flex;flex-direction:column;gap:6px;justify-content:center;background:rgba(6,25,32,.72);color:var(--muted)}
+  .day.available{border-color:rgba(82,182,154,.6);background:rgba(82,182,154,.18);color:var(--white)}
+  .day.unavailable{opacity:.45}
+  .day a{color:inherit;font-weight:700}
+
+  .booking-card{padding:24px;display:grid;gap:14px}
+  .booking-card h3{margin:0;font-size:20px}
+  .booking-card p{margin:0;color:var(--muted)}
+  .addon-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .addon{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(12,37,50,.55);color:var(--muted);font-size:13px}
+
+  .reviews{padding:24px;display:grid;gap:20px}
+  .reviews h3{margin:0;font-size:22px}
+  .review{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;background:rgba(7,27,32,.75)}
+  .review__meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:600}
+  .review__meta span{color:var(--muted);font-size:13px}
+  .review__text{margin:0;color:var(--muted);line-height:1.6}
+  form.review-form{display:grid;gap:14px;margin-top:12px}
+  .form-row{display:grid;gap:8px}
+  .form-row textarea{border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(7,27,32,.82);color:var(--text);padding:12px;font-family:inherit}
+  .form-row ul{margin:0;padding:0;list-style:none;display:flex;gap:12px}
+  .form-row label{display:flex;align-items:center;gap:6px;cursor:pointer}
+  .form-row input[type="radio"]{accent-color:#52B69A}
+  .btn-submit{justify-self:start;padding:12px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,var(--g-600),var(--g-800));color:#042326;font-weight:700;cursor:pointer;box-shadow:0 12px 32px rgba(0,0,0,.45)}
+  .errorlist{margin:0;padding:0;list-style:none;color:#ff9db0;font-size:13px}
+
+  footer{border-top:1px solid rgba(255,255,255,.12);padding:24px 18px;color:var(--muted);font-size:13px;text-align:center;background:rgba(6,25,32,.8)}
+  @media (max-width:980px){.detail{grid-template-columns:1fr}}
+</style>
+{% endblock meta %}
+{% block content %}
+{% include 'main/includes/navbar.html' %}
+{% include 'main/includes/messages.html' %}
+<main class="page">
+  <div class="page__inner">
+    <section class="detail card">
+      <div class="gallery">
+        <img src="{{ venue.cover_image }}" alt="{{ venue.name }}">
+      </div>
+      <div class="detail__info">
+        <div>
+          <span class="badge">{{ venue.category.name }}</span>
+          <h1>{{ venue.name }}</h1>
+          <div class="pill">📍 {{ venue.city.name }} &middot; {{ venue.surface_type|default:'Premium Surface' }}</div>
+        </div>
+        <p class="description">{{ venue.description }}</p>
+        <div class="pill">💸 Rp {{ venue.price_per_hour|floatformat:0 }} / jam</div>
+        <div class="cta-group">
+          <a class="cta" href="#booking">Check Availability</a>
+          <a class="cta secondary" href="{% if first_available_date %}{% url 'main:booking_times' venue.slug %}?date={{ first_available_date|date:'Y-m-d' }}{% else %}#{% endif %}">Booking Here</a>
+          <form method="post" action="{% url 'main:toggle_wishlist' venue.slug %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="cta secondary" style="background:rgba(12,37,50,.55);color:{% if wishlisted %}#ff9db0{% else %}var(--white){% endif %};border-color:{% if wishlisted %}#ff9db0{% else %}rgba(255,255,255,.18){% endif %};">{% if wishlisted %}Remove Wishlist{% else %}Add to Wishlist{% endif %}</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="booking" class="calendar card">
+      <h3>Ketersediaan — {{ month_label }}</h3>
+      <p class="description">Pilih tanggal yang tersedia untuk melihat slot jam yang dapat dibooking. Klik tanggal untuk lanjut ke pemilihan jam dan add-on.</p>
+      <div class="calendar-grid">
+        {% for day in calendar_days %}
+        <div class="day {% if not day.has_slots %}unavailable{% else %}available{% endif %}{% if day.is_past %} past{% endif %}">
+          <span>{{ day.date|date:'j' }}</span>
+          {% if day.has_slots and not day.is_past %}
+          <a href="{{ day.url }}">Book →</a>
+          {% else %}
+          <small>{% if day.is_past %}Selesai{% else %}Full{% endif %}</small>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="reviews card">
+      <div>
+        <h3>Review Pengunjung</h3>
+        <p class="description">Bagikan pengalamanmu agar pemain lain bisa memilih venue terbaik.</p>
+      </div>
+      <form method="post" class="review-form">
+        {% csrf_token %}
+        <div class="form-row">
+          <span>Rating</span>
+          {{ review_form.rating }}
+          {{ review_form.rating.errors }}
+        </div>
+        <div class="form-row">
+          <label for="{{ review_form.comment.id_for_label }}">Ceritakan pengalamanmu</label>
+          {{ review_form.comment }}
+          {{ review_form.comment.errors }}
+        </div>
+        <button type="submit" class="btn-submit">Kirim Review</button>
+      </form>
+      {% for review in reviews %}
+      <article class="review">
+        <div class="review__meta">
+          <strong>{{ review.user.username }}</strong>
+          <span>{{ review.created_at|date:'d M Y H:i' }}</span>
+        </div>
+        <p class="review__text">⭐ {{ review.rating }} — {{ review.comment }}</p>
+      </article>
+      {% empty %}
+      <p class="description">Belum ada review. Jadilah yang pertama!</p>
+      {% endfor %}
+    </section>
+  </div>
+</main>
+<footer>© {% now 'Y' %} RagaSpace — Booking olahraga jadi mudah.</footer>
+{% endblock content %}

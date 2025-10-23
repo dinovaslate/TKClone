@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block meta %}
+<title>Booking {{ venue.name }} — RagaSpace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#04171f;--panel:#0b2a33;--stroke:#10424a;--text:#e9f9f7;--muted:#99cfd0;--accent:#34A0A4;--accent-2:#1A759F;--danger:#ff6f91;}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;color:var(--text);
+    background:radial-gradient(900px 520px at 0% 0%, rgba(52,160,164,.18), transparent 60%),
+      radial-gradient(900px 520px at 100% 0%, rgba(26,117,159,.18), transparent 60%),
+      linear-gradient(180deg,#04171f 0%,#020d13 100%);
+    min-height:100vh}
+  a{text-decoration:none;color:inherit}
+  .container{width:min(960px,92vw);margin-inline:auto}
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(3,18,24,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 8px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff}
+  .brand .logo{width:30px;height:30px;border-radius:10px;background:conic-gradient(from 140deg,#C9FFF0,#34A0A4,#1A759F);display:grid;place-items:center;color:#042326}
+  .links{display:flex;gap:24px}
+  .links a{color:var(--muted);font-weight:600;padding:6px;border-radius:10px}
+  .links a.active,.links a.is-active{color:var(--text);background:rgba(52,160,164,.18)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .icon-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--stroke);background:#072028;color:#fff;display:grid;place-items:center}
+  .user-chip{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);border-radius:999px;padding:6px 12px;background:rgba(52,160,164,.16);font-weight:600}
+  .user-chip .avatar{width:26px;height:26px;border-radius:50%;background:#34A0A4;color:#042326;display:grid;place-items:center;font-weight:700}
+  .logout-form{margin:0}
+  .logout-form button{width:36px;height:36px}
+
+  main{padding:40px 0 60px}
+  .hero-card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;box-shadow:0 18px 40px rgba(0,0,0,.45);display:grid;gap:16px;margin-bottom:30px}
+  .hero-card h1{margin:0;font-size:28px}
+  .hero-card p{margin:0;color:var(--muted)}
+  .tag{display:inline-flex;gap:6px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(6,28,36,.72);font-weight:600;font-size:13px}
+
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}}
+
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08);border-radius:20px;box-shadow:0 18px 40px rgba(0,0,0,.45);padding:24px;display:grid;gap:18px}
+  .card h2{margin:0;font-size:20px}
+  .slots{display:grid;gap:10px}
+  .slots label{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;background:rgba(6,25,32,.72);cursor:pointer}
+  .slots label.unavailable{opacity:.45;cursor:not-allowed}
+  .slots input[type="radio"]{display:none}
+  .slots input[type="radio"]:checked + .slot-label{border-color:#34A0A4;background:rgba(52,160,164,.22)}
+  .addon-list{display:grid;gap:10px}
+  .addon-item{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;background:rgba(6,25,32,.65)}
+  .addon-item label{display:flex;gap:10px;align-items:center;font-weight:600;color:var(--muted)}
+  .addon-item input{width:18px;height:18px;accent-color:#34A0A4}
+  .summary{display:grid;gap:10px;font-size:14px;color:var(--muted)}
+  .summary strong{color:var(--text)}
+  .btn-submit{padding:14px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#042326;font-weight:700;cursor:pointer;box-shadow:0 14px 36px rgba(0,0,0,.45)}
+  .alert{padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,111,145,.16);color:#ffd5e0;font-size:14px}
+
+  .toast-stack{position:fixed;top:90px;right:24px;display:grid;gap:10px;z-index:80}
+  .toast-item{padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(7,27,32,.92);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+
+  footer{border-top:1px solid rgba(255,255,255,.1);padding:24px;text-align:center;color:var(--muted);font-size:13px;background:rgba(3,18,24,.82)}
+</style>
+{% endblock meta %}
+{% block content %}
+{% include 'main/includes/navbar.html' %}
+{% include 'main/includes/messages.html' %}
+<main>
+  <div class="container">
+    <section class="hero-card">
+      <h1>Pilih Jadwal — {{ venue.name }}</h1>
+      <div class="tag">📅 {{ selected_date|date:'l, d F Y' }}</div>
+      <p>Silakan pilih slot waktu yang tersedia dan add-on tambahan sebelum lanjut ke pembayaran.</p>
+    </section>
+    <div class="layout">
+      <form method="post" class="card">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+        <h2>Available Time Slots</h2>
+        <div class="slots">
+          {% for widget in form.time_slot %}
+          <div>
+            <input type="radio" name="{{ form.time_slot.html_name }}" value="{{ widget.choice_value }}" id="{{ widget.id_for_label }}" {% if widget.choice_value == form.time_slot.value %}checked{% endif %}>
+            <label class="slot-label" for="{{ widget.id_for_label }}">
+              <span>{{ widget.choice_label }}</span>
+              <strong>Rp {{ venue.price_per_hour|floatformat:0 }}/jam</strong>
+            </label>
+          </div>
+          {% empty %}
+          <div class="alert">Tidak ada slot tersedia untuk tanggal ini.</div>
+          {% endfor %}
+          {{ form.time_slot.errors }}
+        </div>
+        <h2>Add-On</h2>
+        {% if form.addons.field.queryset %}
+        <div class="addon-list">
+          {% for checkbox in form.addons %}
+          <div class="addon-item">
+            <label for="{{ checkbox.id_for_label }}">
+              {{ checkbox.tag }}
+              <span>{{ checkbox.choice_label }}</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="summary">Tidak ada add-on khusus untuk venue ini. Kamu bisa lanjut tanpa tambahan.</p>
+        {% endif %}
+        {{ form.addons.errors }}
+        <button type="submit" class="btn-submit">Lanjut ke Pembayaran</button>
+      </form>
+      <aside class="card">
+        <h2>Ringkasan</h2>
+        <div class="summary">
+          <div><strong>Venue</strong><br>{{ venue.name }}</div>
+          <div><strong>Tanggal</strong><br>{{ selected_date|date:'d F Y' }}</div>
+          <div><strong>Lokasi</strong><br>{{ venue.city.name }}</div>
+          <div><strong>Harga</strong><br>Mulai Rp {{ venue.price_per_hour|floatformat:0 }} / jam</div>
+          <p>Harga akhir akan dihitung berdasarkan durasi slot yang dipilih dan add-on tambahan.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+<footer>© {% now 'Y' %} RagaSpace — Step into your arena.</footer>
+{% endblock content %}

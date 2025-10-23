@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block meta %}
+<title>Pembayaran — {{ booking.venue.name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#020c12;--panel:#081d25;--stroke:#0f3b45;--text:#e6f7f5;--muted:#9cc8c9;--accent:#34A0A4;--accent-2:#168AAD;--highlight:#99D98C;}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;color:var(--text);
+    background:radial-gradient(900px 520px at 0% 0%, rgba(153,217,140,.12), transparent 60%),
+      radial-gradient(900px 520px at 100% 0%, rgba(52,160,164,.12), transparent 60%),
+      linear-gradient(180deg,#020c12 0%,#03141a 100%);
+    min-height:100vh}
+  a{text-decoration:none;color:inherit}
+  .container{width:min(960px,92vw);margin-inline:auto}
+  .topbar{position:sticky;top:0;z-index:40;background:rgba(3,20,26,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 8px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff}
+  .brand .logo{width:30px;height:30px;border-radius:10px;background:conic-gradient(from 140deg,#C9FFF0,#34A0A4,#1A759F);display:grid;place-items:center;color:#042326}
+  .links{display:flex;gap:24px}
+  .links a{color:var(--muted);font-weight:600;padding:6px;border-radius:10px}
+  .links a.active,.links a.is-active{color:var(--text);background:rgba(52,160,164,.18)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .icon-btn{width:36px;height:36px;border-radius:12px;border:1px solid var(--stroke);background:#072028;color:#fff;display:grid;place-items:center}
+  .user-chip{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);border-radius:999px;padding:6px 12px;background:rgba(52,160,164,.16);font-weight:600}
+  .user-chip .avatar{width:26px;height:26px;border-radius:50%;background:#34A0A4;color:#042326;display:grid;place-items:center;font-weight:700}
+  .logout-form{margin:0}
+  .logout-form button{width:36px;height:36px}
+
+  main{padding:40px 0 60px}
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;box-shadow:0 18px 40px rgba(0,0,0,.45);display:grid;gap:18px}
+  .card h1{margin:0;font-size:26px}
+  .card h2{margin:0;font-size:20px}
+  .summary{display:grid;gap:12px;font-size:14px;color:var(--muted)}
+  .summary strong{color:var(--text)}
+  .invoice{display:grid;gap:10px;font-size:15px}
+  .invoice-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:14px;background:rgba(6,25,32,.75);border:1px solid rgba(255,255,255,.1)}
+  .invoice-row.total{background:rgba(52,160,164,.2);border-color:rgba(52,160,164,.45);color:#042326;font-weight:700}
+  .badge{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:999px;background:rgba(153,217,140,.18);border:1px solid rgba(153,217,140,.4);color:var(--highlight);font-weight:700;font-size:12px}
+
+  form.method-form{display:grid;gap:14px}
+  .method-options{display:grid;gap:10px}
+  .method-option{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;background:rgba(6,25,32,.75);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .method-option input{width:18px;height:18px;margin-right:12px;accent-color:#34A0A4}
+  .method-option label{display:flex;gap:12px;align-items:center;font-weight:600;color:var(--muted);flex:1}
+  .btn-primary{padding:14px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#042326;font-weight:700;cursor:pointer;box-shadow:0 14px 36px rgba(0,0,0,.45)}
+  .btn-secondary{padding:12px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:transparent;color:var(--text);font-weight:600;cursor:pointer}
+  .status-box{padding:16px;border-radius:16px;border:1px solid rgba(153,217,140,.4);background:rgba(153,217,140,.15);color:#dff6e5;display:grid;gap:6px}
+  .toast-stack{position:fixed;top:90px;right:24px;display:grid;gap:10px;z-index:80}
+  .toast-item{padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(7,27,32,.92);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+
+  footer{border-top:1px solid rgba(255,255,255,.1);padding:24px;text-align:center;color:var(--muted);font-size:13px;background:rgba(3,18,24,.82)}
+</style>
+{% endblock meta %}
+{% block content %}
+{% include 'main/includes/navbar.html' %}
+{% include 'main/includes/messages.html' %}
+<main>
+  <div class="container">
+    <div class="layout">
+      <section class="card">
+        <h1>Pembayaran Booking</h1>
+        <p class="summary">Selesaikan pembayaran untuk mengamankan slotmu. Deposit sebesar Rp 10.000 akan dibayarkan terlebih dahulu.</p>
+        <div class="summary">
+          <div><strong>Venue</strong><br>{{ booking.venue.name }}</div>
+          <div><strong>Tanggal</strong><br>{{ booking.time_slot.date|date:'d F Y' }}</div>
+          <div><strong>Jam</strong><br>{{ booking.time_slot.start_time|time:'H:i' }} - {{ booking.time_slot.end_time|time:'H:i' }}</div>
+        </div>
+        <div class="invoice">
+          <div class="invoice-row"><span>Deposit</span><strong>Rp {{ booking.deposit_amount|floatformat:0 }}</strong></div>
+          <div class="invoice-row"><span>Add-on</span><strong>Rp {{ booking.addon_total|floatformat:0 }}</strong></div>
+          <div class="invoice-row total"><span>Total to be paid</span><span>Rp {{ booking.total_amount|floatformat:0 }}</span></div>
+        </div>
+        {% if addons %}
+        <div class="summary">
+          <strong>Add-on kamu</strong>
+          <ul>
+            {% for addon in addons %}
+            <li>{{ addon.name }} — Rp {{ addon.price|floatformat:0 }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% if booking.status == 'awaiting_confirmation' %}
+        <div class="status-box">
+          <strong>Menunggu Konfirmasi</strong>
+          <span>Silakan cek aplikasi pembayaranmu dan tekan tombol konfirmasi setelah transaksi selesai.</span>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" name="confirm" value="1" class="btn-primary">Konfirmasi Pembayaran</button>
+        </form>
+        {% else %}
+        <form method="post" class="method-form">
+          {% csrf_token %}
+          <h2>Pilih Metode Pembayaran</h2>
+          {% with selected=form.payment_method.value|default:booking.payment_method %}
+          <div class="method-options">
+            <label class="method-option">
+              <input type="radio" name="payment_method" value="qris" {% if selected == 'qris' %}checked{% endif %}>
+              <span>QRIS — Mudah dipindai untuk semua e-wallet</span>
+            </label>
+            <label class="method-option">
+              <input type="radio" name="payment_method" value="gopay" {% if selected == 'gopay' %}checked{% endif %}>
+              <span>GoPay — Terintegrasi dengan GoJek</span>
+            </label>
+          </div>
+          {% endwith %}
+          {{ form.payment_method.errors }}
+          <button type="submit" class="btn-primary">Lanjutkan Pembayaran</button>
+        </form>
+        {% endif %}
+      </section>
+      <aside class="card">
+        <h2>Detail Booking</h2>
+        <div class="summary">
+          <div><strong>Kode Booking</strong><br>#{{ booking.id }}</div>
+          <div><strong>Dibuat</strong><br>{{ booking.created_at|date:'d M Y H:i' }}</div>
+          <div><strong>Status</strong><br>{{ booking.get_status_display }}</div>
+          <div><strong>Metode</strong><br>{% if booking.payment_method %}{{ booking.get_payment_method_display }}{% else %}-{% endif %}</div>
+        </div>
+        <span class="badge">DP 10.000 + sisa bayar saat venue</span>
+      </aside>
+    </div>
+  </div>
+</main>
+<footer>© {% now 'Y' %} RagaSpace — Secure your playtime.</footer>
+{% endblock content %}

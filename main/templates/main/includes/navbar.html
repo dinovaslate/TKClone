@@ -1,0 +1,26 @@
+<header class="topbar">
+    <div class="container nav">
+        <a class="brand" href="{%- url 'main:home' -%}">
+            <div class="logo" aria-label="RagaSpace">🐾</div>
+            <span>RagaSpace</span>
+        </a>
+        <nav class="nav-links links">
+            <a href="{% url 'main:home' %}" class="{% if active_page == 'home' %}active is-active{% endif %}">Home</a>
+            <a href="{% url 'main:catalog' %}" class="{% if active_page == 'catalog' %}active is-active{% endif %}">Catalog</a>
+            <a href="{% url 'main:wishlist' %}" class="{% if active_page == 'wishlist' %}active is-active{% endif %}">Wishlist</a>
+        </nav>
+        <div class="actions">
+            <div class="user-chip">
+                <span class="avatar">{{ request.user.username|default:'U'|slice:':1'|upper }}</span>
+                <span class="name">{{ request.user.username }}</span>
+            </div>
+            <a class="icon-btn" href="{%- url 'main:wishlist' -%}" title="Wishlist">
+                ❤️
+            </a>
+            <form action="{% url 'main:logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="icon-btn" title="Log out">⏻</button>
+            </form>
+        </div>
+    </div>
+</header>
